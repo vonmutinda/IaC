@@ -4,7 +4,7 @@ NETWOK_PARAMS = network_params.json
 
 SERVER_STACK = udagram-servers
 SERVER_FILE = servers.yml
-SERVER_PARAMS = server_params.yml
+SERVER_PARAMS = server_params.json
 
 create-network:
 	aws cloudformation create-stack --stack-name ${NETWORK_STACK} --template-body file://${NETWORK_FILE}  --parameters file://${NETWOK_PARAMS} --capabilities "CAPABILITY_IAM" "CAPABILITY_NAMED_IAM" --region=us-east-1
