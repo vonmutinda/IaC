@@ -36,7 +36,7 @@ Resources:
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
+        - IpProtocol: tcp # Troubleshooting (SSH)
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
@@ -46,14 +46,48 @@ Resources:
           ToPort: 65535
           CidrIp: 0.0.0.0/0
 
+  S3AccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - "sts:AssumeRole"
+            Effect: Allow
+            Principal:
+              Service:
+                - s3.amazonaws.com
+
+  S3ListBucketGetObjectPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: S3ListBucketGetObjectPolicy
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - "s3:ListBucket"
+              - "s3:GetObject"
+            Resource: "*"
+      Roles:
+        - !Ref S3AccessRole
+
+  InstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      Path: "/"
+      Roles:
+        - !Ref S3AccessRole
+
   WebAppLaunchConfiguration:
-    Type: AWS::AutoScaling::LaunchConfiguration # Alternative to AWS::AutoScaling::LaunchConfiguration
+    Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       ImageId: ami-0729e439b6769d6ab # Ubuntu 18.04 LTS
-      KeyName: vockey
+      KeyName: vockey # Substitute with your own
       SecurityGroups:
         - !Ref WebServerSecurityGroup
       InstanceType: t3.medium # 2vCPU 8GB RAM
+      IamInstanceProfile: !Ref InstanceProfile
       BlockDeviceMappings:
         - DeviceName: "/dev/sdk"
           Ebs:
@@ -125,5 +159,5 @@ Resources:
 
 Outputs:
   WebAppLoadBalancerUrl:
-    Description: A public URL for our Loadbalancer
+    Description: A public URL for our LoadBalancer
     Value: !Join ["", ["http://", !GetAtt WebAppLoadBalancer.DNSName]]
