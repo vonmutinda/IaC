@@ -1,7 +1,7 @@
 # Udagram Infra
 Infra 
 
-URL: http://udagr-webap-1th4y3001q1wk-221899838.us-east-1.elb.amazonaws.com
+URL: http://udagr-webap-qtwjconehcfn-1387251987.us-east-1.elb.amazonaws.com/
 
 ## Shortcuts
 How to provision, update and destroy resources
